@@ -22,9 +22,7 @@ const ProductList = ({products}) => {
   const [sort, setSort] = useState( router.query?.sort || '');
 
   useEffect(() => {
-  //   const initialSortOption = router.query.sort || '';
-    const initialPage = parseInt(router.query?.page) + 1 || 1;
-  //   setSort(initialSortOption);
+    const initialPage = parseInt(router.query?.page) || 1;
     setPage(initialPage);
   }, []);
 
@@ -55,7 +53,7 @@ const ProductList = ({products}) => {
     setPage(value);
     const queryParams = {
       ...router.query,
-      page: value - 1
+      page: value
     };
     router.push({ pathname: router.pathname, query: queryParams }, undefined, {
       scroll: false,
@@ -77,11 +75,11 @@ const ProductList = ({products}) => {
               onChange={sortChangeHandler}
               // defaultValue={ sort || ''}
               value={sortOptions.find(option => option.value === sort)}
-              isClearable
               styles={
                 {control: (provided, state) => ({
                   ...provided,
-                  width: '300px', 
+                  width: '250px', 
+                  cursor: 'pointer',
                 })}
               }
           />

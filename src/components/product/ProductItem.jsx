@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 const ProductItem = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
-  // const SaleTag = () => (
-  //   <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded">
-  //     Sale
-  //   </div>
-  // );
   return (
     <a
       key={product.id}
-      // href={product.href}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="flex gap-3 aspect-square flex-col cursor-pointer"
@@ -46,7 +40,6 @@ const ProductItem = ({ product }) => {
           )}
         </div>
       </div>
-      {/* <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3> */}
     </a>
   );
 };

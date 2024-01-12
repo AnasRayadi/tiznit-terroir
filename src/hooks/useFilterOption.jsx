@@ -13,14 +13,15 @@ export const useFilterOption = (initialOptions, queryKey) => {
 
   useEffect(() => {
     const initialValues = router.query[queryKey] || [];
-    const updatedOptions = options?.map((option) => ({
+    const updatedOptions = initialOptions?.map((option) => ({
       ...option,
-      checked: initialValues.includes(option.value || option.slug) ,
+      checked:
+      Array.isArray(initialValues) ? initialValues.some(value => value === option.value || value === option.slug) : initialValues === option.slug || initialValues === option.value,
     }));
     setOptions(updatedOptions);
-  }, [router.query[queryKey]]);
+  }, [router.query[queryKey], initialOptions]);
 
-  const handleOptionsClick = (event, checked) => {
+  const handleOptionsClick = (event) => {
     const { value } = event.target;
     if (queryKey !== "category") {
       const updatedOptions = options.map((option) => {
@@ -68,24 +69,5 @@ export const useFilterOption = (initialOptions, queryKey) => {
       );
     }
   };
-
-  // const handleRadioClick = (event) => {
-  //   const { value } = event.target;
-  //   const updatedOptions = options.map((option) => ({
-  //     ...option,
-  //     checked: option.slug === value,
-  //   }));
-  //   setOptions(updatedOptions);
-
-  //   const selectedOption = updatedOptions.find((option) => option.checked);
-  //   const queryParams = {
-  //     ...router.query,
-  //     [queryKey]: selectedOption ? selectedOption.slug : undefined,
-  //   };
-  //   router.push({ pathname: router.pathname, query: queryParams }, undefined, {
-  //     scroll: false,
-  //   });
-  // };
-
   return [options, handleOptionsClick];
 };

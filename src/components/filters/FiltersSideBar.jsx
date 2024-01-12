@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   Slider,
 } from "@mui/material";
 import FilterCheckboxGroup from "./FilterCheckboxGroup";
 import CollapsibleSection from "./CollapsibleSection";
-import { axiosInstance } from "@/api/axios";
 import { useRouter } from "next/router";
 import { Search } from "@mui/icons-material";
 import { useFilterOption } from "@/hooks/useFilterOption";
@@ -21,26 +17,19 @@ const availabilityOptions = [
 
 const FiltersSideBar = ({categories ,filters }) => {
   const router = useRouter();
-  // const [categories, setCategories] = useState([]);
-  const [searchValue, setSearchValue] = useState(router.query?.q || "");
-  const [priceRange, setPriceRange] = useState([2000, 6000]);
-  console.log("filters :" + JSON.stringify(filters));
-  
+  const [priceRange, setPriceRange] = useState([filters.minPrice, filters.maxPrice]);
   const [category,  handleCategoryRadioClick ] = useFilterOption(
     categories,
     "category"
   );
-
   const [availability, handleAvailabilityCheckboxClick] = useFilterOption(
     availabilityOptions,
     "availability"
   );
-
     const [size, handleSizeCheckboxClick] = useFilterOption(
       filters.optionFilters.size,
     "optionSize"
   );
-  // console.log("size :" + JSON.stringify(size));
   const [color, handleColorCheckboxClick] = useFilterOption(
     filters.optionFilters.color,
     "optionColor"
@@ -50,30 +39,8 @@ const FiltersSideBar = ({categories ,filters }) => {
     filters.optionFilters.material,
     "optionMaterial"
   );
-    
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const res = await axiosInstance("api/categories");
-  //       const resData = await res.data;
-  //       setCategories(resData);
-  //     } catch (error) {
-  //       console.error("Error fetching categories data:", error);
-  //     }
-  //   };
-  //   fetchCategories();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (router.query.q) {
-  //     setSearchValue(router.query.q);
-  //   }
-  // }, [router.query.q]);
-
   const handleSearchChange = (event) => {
     const { value } = event.target;
-    setSearchValue(value);
-
     const timer = setTimeout(() => {
       if (value) {
         const queryParams = { ...router.query, q: value };
@@ -117,7 +84,13 @@ const FiltersSideBar = ({categories ,filters }) => {
     );
   }
 
-   
+   const filtersObjects = [
+    { filterName: "category", options: category, handler: handleCategoryRadioClick },
+    { filterName: "availability", options: availability, handler: handleAvailabilityCheckboxClick },
+    { filterName: "size", options: size, handler: handleSizeCheckboxClick },
+    { filterName: "color", options: color, handler: handleColorCheckboxClick },
+    { filterName: "material", options: material, handler: handleMaterialCheckboxClick },
+   ]
   return (
     <div className="h-full text-black border rounded px-3 py-6">
       <div className="bg-white flex gap-3 items-center p-3 rounded-lg shadow-sm mb-4 border-[1px] ">
@@ -127,32 +100,10 @@ const FiltersSideBar = ({categories ,filters }) => {
           placeholder="Search"
           className="w-full outline-none"
           defaultValue={router.query.q || ""}
-          // onChange={handleSearchChange}
-          onKeyUp={handleSearchChange}
+          onChange={handleSearchChange}
         />
       </div>
-      <div className="flex flex-col mb-4 ">
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Category" initialState={false}>
-            <FilterCheckboxGroup
-              filterName="category"
-              options={category}
-              // onCheckboxClicked={handleCategoryCheckboxClick}
-              onRadioClicked={handleCategoryRadioClick}
-            />
-          </CollapsibleSection>
-        </div>
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Availability" initialState={false}>
-            <FilterCheckboxGroup
-              filterName="availability"
-              options={availability}
-              onCheckboxClicked={handleAvailabilityCheckboxClick}
-            />
-          </CollapsibleSection>
-        </div>
-
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
+      <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
           <CollapsibleSection title="Price" initialState={false}>
             <Box sx={{ width: 200 }}>
               <Slider
@@ -166,64 +117,19 @@ const FiltersSideBar = ({categories ,filters }) => {
                 style={{ color: "#000", width: "250px" }}
               />
             </Box>
-            {/* <div className="flex justify-between items-center py-3">
-              <input
-                className="py-1 w-20 border border-1 border-gray-500 rounded px-2"
-                type="Number"
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange(() => {
-                  const newPriceRange = [e.target.value, priceRange[1]];
-                  setTimeout(() => {
-                  const queryParams = {
-                    ...router.query,
-                    "price.gte": newPriceRange[0],
-                    "price.lte": newPriceRange[1],
-                  };
-                  router.push(
-                    { pathname: router.pathname, query: queryParams },
-                    undefined,
-                    { scroll: false }
-                  );
-                  return newPriceRange;
-                  }, 1000);
-                } )}
-              />
-              <input
-                className="py-1 w-20 border border-1 border-gray-500 rounded px-2"
-                type="Number"
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], e.target.value])}
-              />
-            </div> */}
           </CollapsibleSection>
         </div>
+      <div className="flex flex-col mb-4 ">
+        { filtersObjects.map(filter => 
         <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Size" initialState={false}>
+          <CollapsibleSection title={filter.filterName.charAt(0).toUpperCase() + filter.filterName.slice(1) } initialState={false}>
             <FilterCheckboxGroup
-              filterName="optionSize"
-              options={size}
-              onCheckboxClicked={handleSizeCheckboxClick}
+              filterName={filter.filterName}
+              options={filter.options}
+              onOptionClicked={filter.handler}
             />
           </CollapsibleSection>
-        </div>
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Color" initialState={false}>
-            <FilterCheckboxGroup
-              filterName="optionColor"
-              options={color}
-              onCheckboxClicked={handleColorCheckboxClick}
-            />
-          </CollapsibleSection>
-        </div>
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Material" initialState={false}>
-            <FilterCheckboxGroup
-              filterName="optionMaterial"
-              options={material}
-              onCheckboxClicked={handleMaterialCheckboxClick}
-            />
-          </CollapsibleSection>
-        </div>
+        </div>)}
       </div>
     </div>
   );
