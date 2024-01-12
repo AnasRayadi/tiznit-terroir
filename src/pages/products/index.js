@@ -4,27 +4,27 @@ import ProductList from "@/components/product/ProductList";
 import { categoryPath, filtersPath, productsPath } from "@/util/constants";
 import { queryToUrlSearchParam } from "@/util/queryToUrlSearchParam";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 
-const ProductsPage = ({categories ,filters}) => {
-  const [products, setProducts] = useState([]);
+const ProductsPage = ({products ,categories ,filters}) => {
+  // const [products, setProducts] = useState([]);
   const router = useRouter()
   const search = router.query;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const params = new URLSearchParams(search);
-        const queryParams = queryToUrlSearchParam(params);
-        const response = await axiosInstance(`${productsPath}`,{params:queryParams});
-        setProducts(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error fetching products data:', error);
-      }
-    };
-    router.isReady && fetchData();
-  }, [router.query]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const params = new URLSearchParams(search);
+  //       const queryParams = queryToUrlSearchParam(params);
+  //       const response = await axiosInstance(`${productsPath}`,{params:queryParams});
+  //       setProducts(response.data);
+  //       console.log(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching products data:', error);
+  //     }
+  //   };
+  //   router.isReady && fetchData();
+  // }, [router.query]);
   return (
     <>
       <div className="w-full bg-gray-900 flex flex-row items-center  text-white py-20">
@@ -48,11 +48,15 @@ export async function getServerSideProps(context) {
   const { query } = context;
   const params = new URLSearchParams(query);
   const queryParams = queryToUrlSearchParam(params);
+  const productsRes = await axiosInstance(`${productsPath}`,{params:queryParams});
+  const products = productsRes.data
+  console.log(products);
   const res = await axiosInstance(categoryPath);
   const response = await axiosInstance(filtersPath , { params:queryParams });
 
   return {
     props: {
+      products: products ,
       categories: res.data,
       filters: response.data
     },
