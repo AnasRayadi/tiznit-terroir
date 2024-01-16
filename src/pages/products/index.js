@@ -4,12 +4,12 @@ import ProductList from "@/components/product/ProductList";
 import { categoryPath, filtersPath, productsPath } from "@/util/constants";
 import { queryToUrlSearchParam } from "@/util/queryToUrlSearchParam";
 import { useRouter } from "next/router";
-// import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const ProductsPage = ({products ,categories ,filters}) => {
+const ProductsPage = ({ products, categories, filters }) => {
   // const [products, setProducts] = useState([]);
-  const router = useRouter()
-  const search = router.query;
+  // const router = useRouter()
+  // const search = router.query;
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -27,18 +27,19 @@ const ProductsPage = ({products ,categories ,filters}) => {
   // }, [router.query]);
   return (
     <>
-      <div className="w-full bg-gray-900 flex flex-row items-center  text-white py-20">
+      <div className="w-full bg-gray-900 flex flex-col items-center text-white py-10 md:py-20">
         <div className="mx-auto flex flex-col items-center">
-          <h1 className="text-4xl  font-bold mb-4">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4">
             Products Page
           </h1>
-          <p className="text-lg">
+          <p className="text-base md:text-lg text-center md:w-2/3">
             Browse through our wide range of products and find what you need.
           </p>
         </div>
       </div>
-      <ProductLayout categories={categories} filters={filters} >
-            <ProductList  products={products}/>
+
+      <ProductLayout categories={categories} filters={filters}>
+        <ProductList products={products} />
       </ProductLayout>
     </>
   );
@@ -48,17 +49,18 @@ export async function getServerSideProps(context) {
   const { query } = context;
   const params = new URLSearchParams(query);
   const queryParams = queryToUrlSearchParam(params);
-  const productsRes = await axiosInstance(`${productsPath}`,{params:queryParams});
-  const products = productsRes.data
+  const productsRes = await axiosInstance(`${productsPath}`, {
+    params: queryParams,
+  });
+  const products = productsRes.data;
   console.log(products);
   const res = await axiosInstance(categoryPath);
-  const response = await axiosInstance(filtersPath , { params:queryParams });
-
+  const response = await axiosInstance(filtersPath, { params: queryParams });
   return {
     props: {
-      products: products ,
+      products: products,
       categories: res.data,
-      filters: response.data
+      filters: response.data,
     },
   };
 }

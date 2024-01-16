@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useCollapsibleState = (initialState = false) => {
+export const useCollapsibleState = (initialState) => {
     const [isOpen, setIsOpen] = useState(initialState);
   
     const toggleCollapsible = () => {
@@ -8,4 +8,4 @@ export const useCollapsibleState = (initialState = false) => {
     };
   
     return [isOpen, toggleCollapsible];
-};
+}; 

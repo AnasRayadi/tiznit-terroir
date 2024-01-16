@@ -58,8 +58,9 @@ const FiltersSideBar = ({categories ,filters }) => {
     }, 1000);
     return () => clearTimeout(timer);
   };
-
+  // let sizeOpen = false ;
   useEffect(() => {
+    
     if (router.query["price.gte"]) {
       setPriceRange([
         parseInt(router.query["price.gte"]),
@@ -85,14 +86,14 @@ const FiltersSideBar = ({categories ,filters }) => {
   }
 
    const filtersObjects = [
-    { filterName: "category", options: category, handler: handleCategoryRadioClick },
-    { filterName: "availability", options: availability, handler: handleAvailabilityCheckboxClick },
-    { filterName: "size", options: size, handler: handleSizeCheckboxClick },
-    { filterName: "color", options: color, handler: handleColorCheckboxClick },
-    { filterName: "material", options: material, handler: handleMaterialCheckboxClick },
+    { filterName: "category", options: category, handler: handleCategoryRadioClick ,initialState:true },
+    { filterName: "availability", options: availability, handler: handleAvailabilityCheckboxClick, initialState:true},
+    { filterName: "size", options: size, handler: handleSizeCheckboxClick, initialState: router.query.optionSize && true },
+    { filterName: "color", options: color, handler: handleColorCheckboxClick, initialState: router.query.optionColor && true },
+    { filterName: "material", options: material, handler: handleMaterialCheckboxClick, initialState: router.query.optionMaterial && true },
    ]
   return (
-    <div className="h-full text-black border rounded px-3 py-6">
+    <div className="h-full text-black  px-2 py-6">
       <div className="bg-white flex gap-3 items-center p-3 rounded-lg shadow-sm mb-4 border-[1px] ">
         <Search />
         <input
@@ -103,9 +104,9 @@ const FiltersSideBar = ({categories ,filters }) => {
           onChange={handleSearchChange}
         />
       </div>
-      <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title="Price" initialState={false}>
-            <Box sx={{ width: 200 }}>
+      <div className="p-1 lg:p-0">
+          <CollapsibleSection title="Price" initialState={true}>
+            <Box sx={{ width: 'full' ,paddingLeft:'10px' ,paddingRight:'10px' }}>
               <Slider
                 value={priceRange}
                 onChange={priceChangeHandler}
@@ -114,15 +115,15 @@ const FiltersSideBar = ({categories ,filters }) => {
                 valueLabelDisplay="auto"
                 min={filters.minPrice}
                 max={filters.maxPrice}
-                style={{ color: "#000", width: "250px" }}
+                style={{ color: "#000", }}
               />
             </Box>
           </CollapsibleSection>
         </div>
       <div className="flex flex-col mb-4 ">
         { filtersObjects.map(filter => 
-        <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
-          <CollapsibleSection title={filter.filterName.charAt(0).toUpperCase() + filter.filterName.slice(1) } initialState={false}>
+        <div className=" p-1 lg:p-0">
+          <CollapsibleSection title={filter.filterName.charAt(0).toUpperCase() + filter.filterName.slice(1) } initialState={filter.initialState}>
             <FilterCheckboxGroup
               filterName={filter.filterName}
               options={filter.options}

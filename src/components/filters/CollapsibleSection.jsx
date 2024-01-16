@@ -1,10 +1,10 @@
 import { useCollapsibleState } from "@/hooks/useCollapsibleState";
 
-const CollapsibleSection = ({ title, children, initialState = false }) => {
+const CollapsibleSection = ({ title, children, initialState }) => {
     const [isOpen, toggleCollapsible] = useCollapsibleState(initialState);
   
     return (
-      <div className="border-b-[1px] border-gray-300 lg:border-none order-[-1] p-1 md:px-2 md:py-3 lg:p-0">
+      <div className=" p-1 lg:p-0">
         <div
           onClick={toggleCollapsible}
           className="py-3 cursor-pointer flex items-center justify-between lg:justify-start gap-4 text-lg md:text-xl"

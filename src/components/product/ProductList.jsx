@@ -49,7 +49,6 @@ const ProductList = ({products}) => {
   }
 
   const pageChangeHandler = (e, value) => {
-    console.log(value);
     setPage(value);
     const queryParams = {
       ...router.query,
@@ -62,11 +61,11 @@ const ProductList = ({products}) => {
 
   return (
     <div className="bg-white h-full py-6">
-      <div className="flex justify-between px-5 mx-auto">
-        <p>{content?.length} Results</p>
-        <div className="flex">
-          <label htmlFor="" className="p-1">
-            Sort by :
+      <div className="flex flex-row justify-between lg:px-5 mx-auto">
+        <p className="p-1">{content?.length} Results</p>
+        <div className="flex justify-end w-[70%] ">
+          <label htmlFor="sort" className="p-1">
+            Sort by
           </label> 
           <Select 
               id="sort"
@@ -78,15 +77,15 @@ const ProductList = ({products}) => {
               styles={
                 {control: (provided, state) => ({
                   ...provided,
-                  width: '250px', 
+                  width: '180px',
                   cursor: 'pointer',
                 })}
               }
           />
         </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4  py-4">
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+      <div className="mx-auto max-w-7xl lg:px-4 py-4">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
           {content?.map((product) => (
             <ProductItem product={product} key={product.id} />
           ))}
@@ -97,8 +96,9 @@ const ProductList = ({products}) => {
         count={totalPages} 
         page={page}
         onChange={pageChangeHandler}
-        showFirstButton 
-        showLastButton
+        // showFirstButton 
+        // showLastButton
+        
         />
       </div>
     </div>

@@ -9,7 +9,6 @@ const ProductItem = ({ product }) => {
       className="flex gap-3 aspect-square flex-col cursor-pointer"
     >
       <div className="relative w-full h-full rounded-md overflow-hidden shadow-sm  border-[1px] border-neutral-100 ">
-        
         <img
           src={
             isHovered && product.mediaPathsList[1]
@@ -26,19 +25,20 @@ const ProductItem = ({ product }) => {
         )}
       </div>
       <div className="flex flex-col px-2">
-        <p className="font-light">{product.title}</p>
-        <div className="flex">
-          {product.hasVariants && <p className="pt-1 mr-1">Starting from </p>}
-          <p className="text-lg font-semibold text-gray-900">
-            {" "}
-            {product.price} MAD
-          </p>
-          {product.compareAtPrice && (
-            <p className="line-through whitespace-nowrap text-xs">
-              {product.compareAtPrice} MAD
+        <p className="font-light text-start">{product.title}</p>
+        <div className="flex flex-col sm:flex-row  ">
+          {product.hasVariants && <p className="text-sm font-medium pt-[3px] mr-1">Starting from </p>}
+          <div className="flex flex-col sm:flex-row">
+            <p className="text-sm font-medium sm:text-base sm:font-semibold text-gray-900 mr-1">
+              {product.price} {"MAD "}
             </p>
-          )}
-        </div>
+            {product.compareAtPrice && (
+              <p className="line-through text-sm sm:text-base">
+                {product.compareAtPrice} MAD
+              </p>
+            )}
+          </div>
+        </div> 
       </div>
     </a>
   );
