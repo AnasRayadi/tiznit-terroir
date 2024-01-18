@@ -4,7 +4,7 @@ const CollapsibleSection = ({ title, children, initialState }) => {
     const [isOpen, toggleCollapsible] = useCollapsibleState(initialState);
   
     return (
-      <div className=" p-1 lg:p-0">
+      <div className=" p-2 lg:p-0">
         <div
           onClick={toggleCollapsible}
           className="py-3 cursor-pointer flex items-center justify-between lg:justify-start gap-4 text-lg md:text-xl"

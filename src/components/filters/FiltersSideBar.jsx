@@ -52,25 +52,49 @@ const FiltersSideBar = ({ categories, filters }) => {
   }, [category, availability, size, color, material]);
   let prevParams = { ...router.query };  
   prevParams = _.omit(router.query, "page");
+
+  const [inputValue, setInputValue] = useState(router.query?.q ||'');
+  const [timer, setTimer] = useState(null);
+
   const handleSearchChange = (event) => {
     const { value } = event.target;
-    const timer = setTimeout(() => {
-      if (value) {
-        const queryParams = {page: 1, ...prevParams, q: value };
-        router.push(
-          { pathname: router.pathname, query: queryParams },
-          undefined,
-          { scroll: false }
-        );
-      } else {
-        const { q, ...rest } = router.query;
-        router.replace({ pathname: router.pathname, query: rest }, undefined, {
-          scroll: false,
-        });
-      }
-    }, 1000);
-    return () => clearTimeout(timer);
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    setTimer(
+      setTimeout(() => {
+        if (value) {
+          const queryParams = { page: 1, ...prevParams, q: value };
+          router.push(
+            { pathname: router.pathname, query: queryParams },
+            undefined,
+            { scroll: false }
+          );
+        } else {
+          const { q, ...rest } = prevParams;
+          router.replace(
+            { pathname: router.pathname, query: rest },
+            undefined,
+            { scroll: false }
+          );
+        }
+      }, 1000)
+    );
+
+    setInputValue(value);
   };
+
+  useEffect(() => {
+    // Cleanup the timer on component unmount
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [timer]);
+
   useEffect(() => {
     if (router.query["price.gte"]) {
       setPriceRange([
@@ -91,6 +115,26 @@ const FiltersSideBar = ({ categories, filters }) => {
       "price.gte": newValue[0],
       "price.lte": newValue[1],
     };
+    router.push({ pathname: router.pathname, query: queryParams }, undefined, {
+      scroll: false,
+    });
+  };
+
+  const handleClearClick = (key, filter) => {
+    const newFilters = Array.isArray(applyedFilters[key])
+      ? applyedFilters[key]
+          .filter(
+            (option) =>
+              option.value !== filter.value || option.slug !== filter.slug
+          )
+          .map((option) => option.value || option.slug)
+      : [];
+
+    const queryParams = {
+      ...router.query,
+      [key]: newFilters,
+    };
+
     router.push({ pathname: router.pathname, query: queryParams }, undefined, {
       scroll: false,
     });
@@ -128,26 +172,6 @@ const FiltersSideBar = ({ categories, filters }) => {
       initialState: router.query.optionMaterial && true,
     },
   ];
-
-  const handleClearClick = (key, filter) => {
-    const newFilters = Array.isArray(applyedFilters[key])
-      ? applyedFilters[key]
-          .filter(
-            (option) =>
-              option.value !== filter.value || option.slug !== filter.slug
-          )
-          .map((option) => option.value || option.slug)
-      : [];
-
-    const queryParams = {
-      ...router.query,
-      [key]: newFilters,
-    };
-
-    router.push({ pathname: router.pathname, query: queryParams }, undefined, {
-      scroll: false,
-    });
-  };
   return (
     <div className="h-full text-black  px-2 py-6">
       <div className="bg-white flex gap-3 items-center p-3 rounded-lg shadow-sm mb-4 border-[1px] ">
@@ -156,9 +180,10 @@ const FiltersSideBar = ({ categories, filters }) => {
           type="text"
           placeholder="Search"
           className="w-full outline-none"
-          defaultValue={router.query.q || ""}
+          defaultValue={inputValue}
           onChange={handleSearchChange}
         />
+
       </div>
       <div className="flex flex-wrap gap-2 mb-2 ">
         {Object?.keys(applyedFilters).map((key) => {
