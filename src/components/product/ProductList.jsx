@@ -5,21 +5,20 @@ import { useRouter } from "next/router";
 import { Pagination } from "@mui/material";
 
 const sortOptions = [
-    { value: '', label:"Default"},
-    { value: 'price,asc', label:"Price, low to high"},
-    { value: 'price,desc', label: "Price, high to low" },
-    { value: 'title,asc', label: "Alphabetically, A to Z" },
-    { value: 'title,desc', label: "Alphabetically, Z to A" },
-    { value: 'date,asc', label: "Date, old to new" },
-    { value: 'date,desc', label: "Date, new to old" }
+  { value: "", label: "Default" },
+  { value: "price,asc", label: "Price, low to high" },
+  { value: "price,desc", label: "Price, high to low" },
+  { value: "title,asc", label: "Alphabetically, A to Z" },
+  { value: "title,desc", label: "Alphabetically, Z to A" },
+  { value: "date,asc", label: "Date, old to new" },
+  { value: "date,desc", label: "Date, new to old" },
 ];
 
-
-const ProductList = ({products}) => {
-  const { content ,totalPages  } = products;
+const ProductList = ({ products }) => {
+  const { content, totalPages } = products;
   const router = useRouter();
-  const [page, setPage] = useState( router.query?.page || 1);
-  const [sort, setSort] = useState( router.query?.sort || '');
+  const [page, setPage] = useState(router.query?.page || 1);
+  const [sort, setSort] = useState(router.query?.sort || "");
 
   useEffect(() => {
     const initialPage = parseInt(router.query?.page) || 1;
@@ -27,37 +26,44 @@ const ProductList = ({products}) => {
   }, []);
 
   const sortChangeHandler = (e) => {
-    setSort(e?.value || '');
-    if(e.value){
+    setSort(e?.value || "");
+    if (e.value) {
       const queryParams = {
         ...router.query,
-        sort: e?.value || ''
+        sort: e?.value || "",
       };
-      router.push({ pathname: router.pathname, query: queryParams }, undefined, {
-        scroll: false,
-      });
-    }
-    else{
+      router.push(
+        { pathname: router.pathname, query: queryParams },
+        undefined,
+        {
+          scroll: false,
+        }
+      );
+    } else {
       const queryParams = {
         ...router.query,
       };
       delete queryParams.sort;
-      router.push({ pathname: router.pathname, query: queryParams }, undefined, {
-        scroll: false,
-      });
+      router.push(
+        { pathname: router.pathname, query: queryParams },
+        undefined,
+        {
+          scroll: false,
+        }
+      );
     }
-  }
+  };
 
   const pageChangeHandler = (e, value) => {
     setPage(value);
     const queryParams = {
       ...router.query,
-      page: value
+      page: value,
     };
     router.push({ pathname: router.pathname, query: queryParams }, undefined, {
       scroll: false,
     });
-  }
+  };
 
   return (
     <div className="bg-white h-full py-6">
@@ -68,37 +74,45 @@ const ProductList = ({products}) => {
             Sort by :
           </label>
 
-          <Select 
-              id="sort"
-              placeholder="Default"
-              options={sortOptions}
-              onChange={sortChangeHandler}
-              // defaultValue={ sort || ''}
-              value={sortOptions.find(option => option.value === sort)}
-              styles={
-                {control: (provided, state) => ({
-                  ...provided,
-                  width: '250px',
-                  cursor: 'pointer',
-                })}
-              }
+          <Select
+            id="sort"
+            placeholder="Default"
+            options={sortOptions}
+            onChange={sortChangeHandler}
+            // defaultValue={ sort || ''}
+            value={sortOptions.find((option) => option.value === sort)}
+            styles={{
+              control: (provided, state) => ({
+                ...provided,
+                width: "250px",
+                cursor: "pointer",
+              }),
+            }}
           />
         </div>
       </div>
-      <div className="mx-auto lg:px-4 py-4">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-8 ">
-          {content?.map((product) => (
-            <ProductItem product={product} key={product.id} />
-          ))}
+      {content?.length === 0 ? (
+        <div className="flex justify-center items-center h-[50vh]">
+          <p className="text-2xl font-semibold">No products found</p>
         </div>
-      </div> 
-      <div className="flex justify-center mt-5 mb-4">
-        <Pagination 
-        count={totalPages} 
-        page={page}
-        onChange={pageChangeHandler}
-        />
-      </div>
+      ) : (
+        <>
+          <div className="mx-auto lg:px-4 py-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-8 ">
+              {content?.map((product) => (
+                <ProductItem product={product} key={product.id} />
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-center mt-5 mb-4">
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={pageChangeHandler}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
