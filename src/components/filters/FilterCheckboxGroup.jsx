@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { FormControl, Radio, RadioGroup } from "@mui/material";
+import { useRouter } from "next/router";
 
 const FilterCheckboxGroup = ({ filterName, options, onOptionClicked }) => {
   const categoryOptions = options.filter((option) => option.slug);
   const [showMore, setShowMore] = useState(false);
+  const router = useRouter();
+  const filterOptions = options.filter((option) => option.value);
+  const displayedOptions = showMore ? filterOptions : filterOptions.slice(0, 10);
+  
+  useEffect(() => { 
+    const updatedFilterName = filterName === "color" ? "optionColor" : filterName === "size" ? "optionSize" : filterName === "material" ? "optionMaterial" : filterName 
+    const initialValues = router.query[updatedFilterName] || [];
+    const filterOptions = options.slice(10)
+    const includesInitialValues = filterOptions.some(option => initialValues.includes(option.value));
+    if (includesInitialValues) {
+      setShowMore(true);
+    }
+   }, []);
 
-  const colorOptions = options.filter((option) => option.value);
-  const displayedOptions = showMore ? colorOptions : colorOptions.slice(0, 10);
+   
 
   const handleShowMore = () => {
     setShowMore(!showMore);
@@ -41,7 +54,6 @@ const FilterCheckboxGroup = ({ filterName, options, onOptionClicked }) => {
         <FormControl>
           <RadioGroup
             aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="female"
             name="radio-buttons-group"
           >
             {categoryOptions.map((option) => (
@@ -61,7 +73,7 @@ const FilterCheckboxGroup = ({ filterName, options, onOptionClicked }) => {
           </RadioGroup>
         </FormControl>
       )}
-      {filterName === "color" && (
+      {options.length > 10 && (
         <button
           className="text-blue-500 hover:text-blue-700" 
         onClick={handleShowMore}>
