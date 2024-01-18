@@ -3,9 +3,9 @@ import { Box, Slider } from "@mui/material";
 import FilterCheckboxGroup from "./FilterCheckboxGroup";
 import CollapsibleSection from "./CollapsibleSection";
 import { useRouter } from "next/router";
-import { Clear, Delete, Search } from "@mui/icons-material";
+import { Clear, Search } from "@mui/icons-material";
 import { useFilterOption } from "@/hooks/useFilterOption";
-
+import _ from 'lodash';
 const availabilityOptions = [
   { value: "IN_STOCK", label: "In stock" },
   { value: "PREORDER", label: "Pre-order" },
@@ -39,11 +39,24 @@ const FiltersSideBar = ({ categories, filters }) => {
     filters.optionFilters.material,
     "optionMaterial"
   );
+
+  const [applyedFilters, setApplyedFilters] = useState({});
+  useEffect(() => {
+    setApplyedFilters({
+      category: category?.filter((option) => option.checked),
+      availability: availability?.filter((option) => option.checked),
+      optionSize: size?.filter((option) => option.checked),
+      optionColor: color?.filter((option) => option.checked),
+      optionMaterial: material?.filter((option) => option.checked),
+    });
+  }, [category, availability, size, color, material]);
+  let prevParams = { ...router.query };  
+  prevParams = _.omit(router.query, "page");
   const handleSearchChange = (event) => {
     const { value } = event.target;
     const timer = setTimeout(() => {
       if (value) {
-        const queryParams = { ...router.query, q: value };
+        const queryParams = {page: 1, ...prevParams, q: value };
         router.push(
           { pathname: router.pathname, query: queryParams },
           undefined,
@@ -67,23 +80,14 @@ const FiltersSideBar = ({ categories, filters }) => {
     }
   }, [router.query["price.gte"]]);
 
-  const [applyedFilters, setApplyedFilters] = useState({});
-  useEffect(() => {
-    setApplyedFilters({
-      category: category?.filter((option) => option.checked),
-      availability: availability?.filter((option) => option.checked),
-      optionSize: size?.filter((option) => option.checked),
-      optionColor: color?.filter((option) => option.checked),
-      optionMaterial: material?.filter((option) => option.checked),
-    });
-  }, [category, availability, size, color, material]);
-
+  
   const priceChangeHandler = (event, newValue) => {
     setPriceRange(newValue);
   };
   const priceChangeCommittedHandler = (event, newValue) => {
     const queryParams = {
-      ...router.query,
+      page: 1,
+      ...prevParams,
       "price.gte": newValue[0],
       "price.lte": newValue[1],
     };
@@ -166,7 +170,7 @@ const FiltersSideBar = ({ categories, filters }) => {
           return filters.map((filter, index) => (
             <div className="flex bg-gray-100 text-gray-900 px-1 py-1 rounded" key={index}>
               <button
-                className="px-1 py-1 "
+                className="px-1 py-1"
                 onClick={() => handleClearClick(key, filter)}
               >
                 <Clear />

@@ -3,6 +3,7 @@ import ProductItem from "./ProductItem";
 import Select from "react-select";
 import { useRouter } from "next/router";
 import { Pagination } from "@mui/material";
+import _ from "lodash";
 
 const sortOptions = [
   { value: "", label: "Default" },
@@ -23,13 +24,15 @@ const ProductList = ({ products }) => {
   useEffect(() => {
     const initialPage = parseInt(router.query?.page) || 1;
     setPage(initialPage);
-  }, []);
-
+  }, [router.query?.page]);
+  let prevParams = { ...router.query };  
+    prevParams = _.omit(router.query, "page");
   const sortChangeHandler = (e) => {
     setSort(e?.value || "");
     if (e.value) {
       const queryParams = {
-        ...router.query,
+        page: 1,
+        ...prevParams,
         sort: e?.value || "",
       };
       router.push(
@@ -41,7 +44,8 @@ const ProductList = ({ products }) => {
       );
     } else {
       const queryParams = {
-        ...router.query,
+        page: 1,
+        ...prevParams,
       };
       delete queryParams.sort;
       router.push(

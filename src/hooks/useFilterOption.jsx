@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-
+import _ from 'lodash';
 export const useFilterOption = (initialOptions, queryKey) => {
   const router = useRouter();
 
@@ -15,14 +15,20 @@ export const useFilterOption = (initialOptions, queryKey) => {
     const initialValues = router.query[queryKey] || [];
     const updatedOptions = initialOptions?.map((option) => ({
       ...option,
-      checked:
-      Array.isArray(initialValues) ? initialValues.some(value => value === option.value || value === option.slug) : initialValues === option.slug || initialValues === option.value,
+      checked: Array.isArray(initialValues)
+        ? initialValues.some(
+            (value) => value === option.value || value === option.slug
+          )
+        : initialValues === option.slug || initialValues === option.value,
     }));
     setOptions(updatedOptions);
   }, [router.query[queryKey], initialOptions]);
 
   const handleOptionsClick = (event) => {
     const { value } = event.target;
+    let prevParams = { ...router.query };  
+    prevParams = _.omit(router.query, "page");
+
     if (queryKey !== "category") {
       const updatedOptions = options.map((option) => {
         if (option.value === value) {
@@ -35,8 +41,10 @@ export const useFilterOption = (initialOptions, queryKey) => {
       });
       setOptions(updatedOptions);
 
+      
       const queryParams = {
-        ...router.query,
+        page: 1,
+        ...prevParams,
         [queryKey]: updatedOptions
           .filter((option) => option.checked)
           .map((option) => option.value),
@@ -57,7 +65,8 @@ export const useFilterOption = (initialOptions, queryKey) => {
 
       const selectedOption = updatedOptions.find((option) => option.checked);
       const queryParams = {
-        ...router.query,
+        page: 1,
+        ...prevParams,
         [queryKey]: selectedOption ? selectedOption.slug : undefined,
       };
       router.push(
