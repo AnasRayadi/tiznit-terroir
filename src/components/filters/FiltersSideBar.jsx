@@ -14,10 +14,6 @@ const availabilityOptions = [
 
 const FiltersSideBar = ({ categories, filters }) => {
   const router = useRouter();
-  const [priceRange, setPriceRange] = useState([
-    filters.minPrice,
-    filters.maxPrice,
-  ]);
   const [category, handleCategoryRadioClick] = useFilterOption(
     categories,
     "category"
@@ -95,19 +91,49 @@ const FiltersSideBar = ({ categories, filters }) => {
     };
   }, [timer]);
 
+  const [priceRange, setPriceRange] = useState([filters.minPrice, filters.maxPrice]);
+  // useEffect(() => {
+  //   router.query["price.gte"]
+  //       && setPriceRange(
+  //      [
+  //           parseInt(router.query["price.gte"]),
+  //           parseInt(router.query["price.lte"]),
+  //         ]
+  //   );
+  // }, [router.query["price.gte"], router.query["price.lte"] ]);
+
   useEffect(() => {
-    if (router.query["price.gte"]) {
-      setPriceRange([
-        parseInt(router.query["price.gte"]),
-        parseInt(router.query["price.lte"]),
-      ]);
+    const routerMinPrice = parseInt(router.query["price.gte"]);
+    const routerMaxPrice = parseInt(router.query["price.lte"]);
+    let newMinPrice = routerMinPrice;
+    let newMaxPrice = routerMaxPrice;
+    if (routerMinPrice && routerMaxPrice) {
+      setPriceRange([routerMinPrice, routerMaxPrice]);
+        if (routerMinPrice < filters.minPrice) {
+            newMinPrice = filters.minPrice;
+        }
+        if (routerMaxPrice > filters.maxPrice) {
+            newMaxPrice = filters.maxPrice;
+        }
+        if (newMinPrice !== routerMinPrice || newMaxPrice !== routerMaxPrice) {
+            const queryParams = {
+                page: 1,
+                ...prevParams,
+                "price.gte": newMinPrice,
+                "price.lte": newMaxPrice,
+            };
+            router.push({ pathname: router.pathname, query: queryParams }, undefined, {
+                scroll: false,
+            });
+        }
     }
-  }, [router.query["price.gte"]]);
+}, [router.query["price.gte"], router.query["price.lte"], filters.minPrice, filters.maxPrice]);
 
   const priceChangeHandler = (event, newValue) => {
     setPriceRange(newValue);
   };
   const priceChangeCommittedHandler = (event, newValue) => {
+    setPriceRange(newValue);
     const queryParams = {
       page: 1,
       ...prevParams,
@@ -207,60 +233,7 @@ const FiltersSideBar = ({ categories, filters }) => {
             </div>
           ));
         })}
-        {/* {Object?.keys(applyedFilters).map((key) =>
-          Array.isArray(applyedFilters[key]) ? (
-            applyedFilters[key]?.map((filter, index) => (
-              <div className="flex " key={index}>
-                <button
-                  className="bg-gray-100 text-gray-900 px-2 py-1 rounded-full"
-                  onClick={() => {
-                    const newFilters = applyedFilters[key].filter((option) =>  option.value !== filter.value || option.slug !== filter.slug ).map(option => option.value || option.slug);
-                    const queryParams = {
-                      ...router.query,
-                      [key]: newFilters,
-                    };
-                    
-                    router.push(
-                      { pathname: router.pathname, query: queryParams },
-                      undefined,
-                      { scroll: false }
-                    );
-                  }}
-                >
-                  <Clear />
-                </button>
-                <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-full">
-                  {filter.label || filter.value || filter.title}
-                </span>
-              </div>
-            ))
-          ) : 
-          (
-            <div className="flex ">
-              <button
-                className="bg-gray-100 text-gray-900 px-2 py-1 rounded-full"
-                onClick={() => {
-                  const queryParams = {
-                    ...router.query,
-                  };
-                  delete queryParams[key];
-                  router.push(
-                    { pathname: router.pathname, query: queryParams },
-                    undefined,
-                    { scroll: false }
-                  );
-                }}
-              >
-                <Clear />
-              </button>
-              <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-full">
-                {applyedFilters[key].label ||
-                  applyedFilters[key].value ||
-                  applyedFilters[key].title}
-              </span>
-            </div>
-           )
-        )} */}
+        
       </div>
       <div className="p-1 lg:p-0">
         <CollapsibleSection title="Price" initialState={true}>
@@ -272,7 +245,7 @@ const FiltersSideBar = ({ categories, filters }) => {
             sx={{ width: "full", paddingLeft: "10px", paddingRight: "10px" }}
           >
             <Slider
-              value={priceRange}
+              value={[priceRange[0], priceRange[1]]}
               onChange={priceChangeHandler}
               onChangeCommitted={priceChangeCommittedHandler}
               step={10}
