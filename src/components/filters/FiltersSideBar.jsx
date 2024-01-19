@@ -92,15 +92,9 @@ const FiltersSideBar = ({ categories, filters }) => {
   }, [timer]);
 
   const [priceRange, setPriceRange] = useState([filters.minPrice, filters.maxPrice]);
-  // useEffect(() => {
-  //   router.query["price.gte"]
-  //       && setPriceRange(
-  //      [
-  //           parseInt(router.query["price.gte"]),
-  //           parseInt(router.query["price.lte"]),
-  //         ]
-  //   );
-  // }, [router.query["price.gte"], router.query["price.lte"] ]);
+  useEffect(() => {
+    setPriceRange([filters.minPrice, filters.maxPrice]);
+  }, [filters.minPrice, filters.maxPrice ]);
 
   useEffect(() => {
     const routerMinPrice = parseInt(router.query["price.gte"]);
@@ -127,7 +121,8 @@ const FiltersSideBar = ({ categories, filters }) => {
             });
         }
     }
-}, [router.query["price.gte"], router.query["price.lte"], filters.minPrice, filters.maxPrice]);
+    
+}, [router.query["price.gte"], router.query["price.lte"]]);
 
   const priceChangeHandler = (event, newValue) => {
     setPriceRange(newValue);
@@ -258,7 +253,7 @@ const FiltersSideBar = ({ categories, filters }) => {
         </CollapsibleSection>
       </div>
       <div className="flex flex-col mb-4 ">
-        {filtersObjects.map((filter) => (
+        {filtersObjects.filter((filter) => filter.options.length > 0).map((filter) => (
           <div className=" p-1 lg:p-0">
             <CollapsibleSection
               title={
