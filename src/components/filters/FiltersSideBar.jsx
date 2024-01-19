@@ -5,7 +5,7 @@ import CollapsibleSection from "./CollapsibleSection";
 import { useRouter } from "next/router";
 import { Clear, Search } from "@mui/icons-material";
 import { useFilterOption } from "@/hooks/useFilterOption";
-import _ from 'lodash';
+import _ from "lodash";
 const availabilityOptions = [
   { value: "IN_STOCK", label: "In stock" },
   { value: "PREORDER", label: "Pre-order" },
@@ -50,10 +50,10 @@ const FiltersSideBar = ({ categories, filters }) => {
       optionMaterial: material?.filter((option) => option.checked),
     });
   }, [category, availability, size, color, material]);
-  let prevParams = { ...router.query };  
+  let prevParams = { ...router.query };
   prevParams = _.omit(router.query, "page");
 
-  const [inputValue, setInputValue] = useState(router.query?.q ||'');
+  const [inputValue, setInputValue] = useState(router.query?.q || "");
   const [timer, setTimer] = useState(null);
 
   const handleSearchChange = (event) => {
@@ -104,7 +104,6 @@ const FiltersSideBar = ({ categories, filters }) => {
     }
   }, [router.query["price.gte"]]);
 
-  
   const priceChangeHandler = (event, newValue) => {
     setPriceRange(newValue);
   };
@@ -183,7 +182,6 @@ const FiltersSideBar = ({ categories, filters }) => {
           defaultValue={inputValue}
           onChange={handleSearchChange}
         />
-
       </div>
       <div className="flex flex-wrap gap-2 mb-2 ">
         {Object?.keys(applyedFilters).map((key) => {
@@ -193,16 +191,17 @@ const FiltersSideBar = ({ categories, filters }) => {
             : [applyedFilters[key]];
 
           return filters.map((filter, index) => (
-            <div className="flex bg-gray-100 text-gray-900 px-1 py-1 rounded" key={index}>
+            <div
+              className="flex bg-gray-100 text-gray-900 px-1 py-1 rounded"
+              key={index}
+            >
               <button
                 className="px-1 py-1"
                 onClick={() => handleClearClick(key, filter)}
               >
                 <Clear />
               </button>
-              <span 
-              className="text-gray-900 text-base px-1 py-1"
-              >
+              <span className="text-gray-900 text-base px-1 py-1">
                 {filter.label || filter.value || filter.title}
               </span>
             </div>
@@ -265,6 +264,10 @@ const FiltersSideBar = ({ categories, filters }) => {
       </div>
       <div className="p-1 lg:p-0">
         <CollapsibleSection title="Price" initialState={true}>
+          <div className="flex justify-between ">
+            <span className="text-base">{priceRange[0]} MAD</span>
+            <span className="text-base">{priceRange[1]} MAD</span>
+          </div>
           <Box
             sx={{ width: "full", paddingLeft: "10px", paddingRight: "10px" }}
           >
